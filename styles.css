@@ -41,26 +41,23 @@
 .demo-title{display:inline;text-align:left;padding:0;font:inherit;color:inherit;line-height:inherit}.demo-title:hover{color:var(--blue)}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition:none!important;scroll-behavior:auto!important}}
 
-/* Separate neutral cards from the page, with recency controlling their emphasis. */
-#discussion-list{padding:2px 0;background:#090c11}
+/* Original shared blue recency treatment; repository colors stay in small markers. */
 .discussion-row,.discussion-row:hover{
-  margin:10px;
-  border:1px solid rgba(199,205,214,var(--recent-edge,.30));
-  border-radius:8px;
-  background:linear-gradient(105deg,rgba(205,210,217,var(--recent-tint,.01)),rgba(205,210,217,var(--recent-tail,.004))) #11151c;
-  box-shadow:inset 5px 0 rgba(199,205,214,var(--recent-edge,.30)),0 3px 10px #0003;
+  background:linear-gradient(105deg,rgba(55,143,250,var(--recent-tint,.02)),rgba(55,143,250,var(--recent-tail,.005)));
+  box-shadow:inset 3px 0 rgba(121,184,255,var(--recent-edge,.08));
 }
-.discussion-row+.discussion-row:before{display:none}
-.discussion-row:hover{border-color:#a2acb9}
-.row-meta time,.row-stats{color:#b5bfcc}
-.recency-guide{display:flex;align-items:center;gap:10px;padding:11px 23px;font-size:11px;color:#a2a8b1;border-bottom:1px solid var(--line);background:#15181e}
-.recency-scale{height:6px;width:100px;border-radius:4px;background:linear-gradient(90deg,#bcc7d6,#191e26)}
+.discussion-row:hover{background-color:#162436}
+.recency-guide{display:flex;align-items:center;gap:10px;padding:11px 23px;font-size:11px;color:#8fa6c0;border-bottom:1px solid var(--line);background:#111b28}
+.recency-scale{height:6px;width:100px;border-radius:4px;background:linear-gradient(90deg,#579fe9,#233449)}
 @media(max-width:520px){.recency-guide{padding:10px 15px;font-size:10px}}
 
-/* Repository color covers names and titles; recency still controls row backgrounds. */
-.repo-text,.repo-nav .repo-name,.discussion-row h2,.discussion-row.is-read h2{color:var(--repo-color,#9dc9ff)}
+/* Keep long text neutral and confine repository identity to small color dots. */
+.repo-text{color:#9dc9ff}
+.repo-nav .repo-name{color:#acb8c8}
+.repo-text::before,.recent-repo-name::before{content:"";display:inline-block;width:6px;height:6px;margin-right:8px;border-radius:50%;vertical-align:middle;background:var(--repo-color,#79b8ff)}
+.repo-nav .repo-bullet,.repo-nav .repo-bullet.c1,.repo-nav .repo-bullet.c2,.repo-nav .repo-bullet.c3{background:var(--repo-color,#79b8ff)}
 .discussion-row h2 a{color:inherit}
-.discussion-row h2 a:hover{color:var(--repo-color,#9dc9ff);text-decoration:underline;text-underline-offset:3px}
+.discussion-row h2 a:hover{color:var(--blue);text-decoration:underline;text-underline-offset:3px}
 
 .recent-repositories{margin:30px 0 0}
 .recent-repo-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 12px}
@@ -71,7 +68,7 @@
 .recent-repo-item:hover,.recent-repo-item.active{background:#20252d;border-color:#39414a}
 .recent-repo-rank{font:10px/1.8 ui-monospace,monospace;color:#6f7a89;padding-top:2px;flex-shrink:0}
 .recent-repo-info{display:flex;flex-direction:column;min-width:0;gap:4px}
-.recent-repo-name{font-size:12px;font-weight:550;color:var(--repo-color,#bdc6d2);line-height:1.65;overflow-wrap:anywhere}
+.recent-repo-name{font-size:12px;font-weight:550;color:#bdc6d2;line-height:1.65;overflow-wrap:anywhere}
 .recent-repo-time{font-size:10px;color:#87919e;line-height:1.6}
 .mobile-recent-repositories{display:none}
 @media(max-width:850px){

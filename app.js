@@ -79,17 +79,15 @@ function rebuildOptions() {
   if (!categories.includes(state.category)) state.category = '';
   $('#repository').value = state.repo; $('#category').value = state.category;
   $('#repo-total').textContent = repos.length;
-  $('#repo-nav').innerHTML = repos.length ? repos.map((repo, i) => `<button data-repo="${esc(repo)}" class="${state.repo === repo ? 'active' : ''}" title="${esc(repo)}"><span class="repo-bullet c${i % 4}"></span><span class="repo-name" style="--repo-color:${repoColors.get(repo)}">${esc(repo.split('/').slice(1).join('/'))}</span><span class="repo-number">${snapshot.items.filter(item => item.repository === repo).length}</span></button>`).join('') : '<p class="muted small">同步後會在這裡顯示儲存庫。</p>';
+  $('#repo-nav').innerHTML = repos.length ? repos.map((repo, i) => `<button data-repo="${esc(repo)}" class="${state.repo === repo ? 'active' : ''}" style="--repo-color:${repoColors.get(repo)}" title="${esc(repo)}"><span class="repo-bullet c${i % 4}"></span><span class="repo-name" style="--repo-color:${repoColors.get(repo)}">${esc(repo.split('/').slice(1).join('/'))}</span><span class="repo-number">${snapshot.items.filter(item => item.repository === repo).length}</span></button>`).join('') : '<p class="muted small">同步後會在這裡顯示儲存庫。</p>';
 }
 function renderRow(item, recency) {
   const unread = isUnread(item, state.read), saved = state.saved.includes(item.id), link = githubDiscussionUrl(item.url);
   const labels = (item.labels || []).slice(0, 3).map(label => `<span class="tag">${esc(label)}</span>`).join('');
   const title = link ? `<a data-open="${esc(item.id)}" href="${esc(link)}" target="_blank" rel="noopener noreferrer">${esc(item.title)}</a>` : `<button class="demo-title" data-demo-open="${esc(item.id)}">${esc(item.title)}</button>`;
-  // Expand the light-to-dark range while keeping older cards outlined.
-  const emphasis = recency ** 1.7;
-  const tint = (0.01 + emphasis * 0.23).toFixed(3);
-  const tail = (0.004 + emphasis * 0.09).toFixed(3);
-  const edge = (0.30 + recency * 0.65).toFixed(3);
+  const tint = (0.02 + recency * 0.24).toFixed(3);
+  const tail = (0.005 + recency * 0.07).toFixed(3);
+  const edge = (0.08 + recency * 0.72).toFixed(3);
   return `<article class="discussion-row ${unread ? '' : 'is-read'}" data-id="${esc(item.id)}" style="--recent-tint:${tint};--recent-tail:${tail};--recent-edge:${edge};--repo-color:${repoColors.get(item.repository)}"><div class="discussion-icon ${item.isAnswered ? 'answered' : ''}">${icon(item.isAnswered ? 'answer' : 'discussions')}</div><div class="row-main"><div class="row-meta"><span class="repo-text" style="--repo-color:${repoColors.get(item.repository)}" title="${esc(item.repository)}">${esc(item.repository.replace('/', ' / '))}</span>${item.isPrivate ? `<span class="private-lock" title="私人儲存庫" aria-label="私人儲存庫">${icon('lock')}</span>` : ''}<time datetime="${esc(item.updatedAt)}" title="${esc(new Date(item.updatedAt).toLocaleString('zh-TW'))}">${relativeTime(item.updatedAt)}</time></div><h2>${title}${unread ? '<span class="new-dot" aria-label="未讀"></span>' : ''}</h2><div class="row-bottom">${item.category ? `<span class="tag category">${esc(item.category)}</span>` : ''}${labels}${item.isAnswered ? '<span class="tag answered-tag">已解答</span>' : ''}${item.closed ? '<span class="tag">已關閉</span>' : ''}<div class="row-stats"><span aria-label="${item.upvotes} 個讚">${icon('upvote')}${item.upvotes}</span><span aria-label="${item.comments} 則回覆">${icon('discussions')}${item.comments}</span></div></div></div><button class="save-button" data-save="${esc(item.id)}" aria-pressed="${saved}" aria-label="${saved ? '取消收藏' : '收藏'}：${esc(item.title)}" title="${saved ? '取消收藏' : '收藏討論'}">${icon('bookmark')}</button></article>`;
 }
 function emptyMarkup() {
