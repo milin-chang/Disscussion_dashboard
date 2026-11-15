@@ -31,11 +31,6 @@
     </aside>
     <main id="main">
       <div class="page-heading"><div><div class="eyebrow"><span class="tiny-line"></span>FOLLOW YOUR FOCUS</div><h1>最近聚焦<span class="heading-dot">.</span></h1><p class="intro">從最近的討論，看見這段時間關注的專案。</p></div><button class="button secondary refresh-button" id="refresh"><span data-icon="refresh"></span><span>重新讀取</span></button></div>
-      <section class="focus-section" aria-labelledby="focus-title" hidden>
-        <div class="focus-heading"><div><h2 id="focus-title">最近在關注哪些 repo？</h2><p id="focus-description">依最近更新的討論整理專案。</p></div><label class="select-wrap focus-period"><select id="focus-period" aria-label="專案活動統計期間"><option value="7">近 7 天</option><option value="30">近 30 天</option></select><span data-icon="chevron"></span></label></div>
-        <div id="focus-grid" class="focus-grid"></div>
-        <div class="focus-bottom"><span>依期間內有更新的討論數排序 · 點專案查看討論</span><button id="focus-expand" aria-expanded="false">查看全部專案</button></div>
-      </section>
       <section class="summary" aria-label="討論摘要">
         <div class="summary-item"><span class="summary-icon blue" data-icon="discussions"></span><div><span class="summary-label">相關討論</span><strong id="stat-total">—</strong></div></div>
         <div class="summary-item"><span class="summary-icon green" data-icon="activity"></span><div><span class="summary-label">尚未閱讀</span><strong id="stat-unread">—</strong></div><span class="summary-hint">等你回來</span></div>
@@ -46,6 +41,7 @@
         <div class="panel-tabs" role="tablist" aria-label="討論範圍"><button role="tab" aria-selected="true" id="tab-created" data-tab="created"><span data-icon="edit"></span>我建立的<span data-count="created">0</span></button><button role="tab" aria-selected="false" id="tab-all" data-tab="all"><span data-icon="discussions"></span>與我相關<span data-count="all">0</span></button><button role="tab" aria-selected="false" id="tab-saved" data-tab="saved"><span data-icon="bookmark"></span>已收藏<span data-count="saved">0</span></button></div>
         <div class="filter-area"><label class="search-box"><span data-icon="search"></span><input type="search" id="search" placeholder="搜尋討論、儲存庫或標籤…" aria-label="搜尋討論"><kbd>/</kbd></label><div class="filter-row"><div class="filter-chips"><button class="chip" id="unread" aria-pressed="false"><span class="unread-dot"></span>未讀</button><button class="chip" id="unanswered" aria-pressed="false">未解答</button><label class="select-wrap category-filter"><select id="category" aria-label="依分類篩選"><option value="">所有分類</option></select><span data-icon="chevron"></span></label><label class="select-wrap mobile-repo"><select id="repository" aria-label="依儲存庫篩選"><option value="">所有儲存庫</option></select><span data-icon="chevron"></span></label></div><label class="select-wrap sort"><span data-icon="sort"></span><select id="sort" aria-label="排序方式"><option value="updated">最近更新</option><option value="created">最新建立</option><option value="comments">最多回覆</option></select><span data-icon="chevron"></span></label></div></div>
         <div class="list-caption"><span><strong id="result-count">0</strong> 則討論<span id="repo-filter-name"></span></span><button id="mark-all-read"><span data-icon="check"></span>全部標為已讀</button></div>
+        <div class="recency-guide" aria-label="底色越明顯，代表討論更新時間越近"><span>近期更新</span><span class="recency-scale" aria-hidden="true"></span><span>較早更新</span></div>
         <div id="discussion-list" role="tabpanel" aria-labelledby="tab-created" aria-busy="true"><div class="loading-state"><span class="spinner"></span>正在讀取討論…</div></div>
         <div class="panel-bottom"><span data-icon="shield"></span><span>原討論的存取權限由 GitHub 管理</span><span class="end-mark">YOU'RE ALL CAUGHT UP</span></div>
       </section>

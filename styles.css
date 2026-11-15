@@ -20,43 +20,11 @@
 .list-caption,.list-caption button{font-size:12px}
 .repo-nav .repo-bullet,.repo-nav .repo-bullet.c1,.repo-nav .repo-bullet.c2,.repo-nav .repo-bullet.c3{background:var(--blue)}
 .repo-nav .repo-name{font-size:13px}
-.focus-section{margin:0 0 28px}
-.focus-section[hidden]{display:none}
-.focus-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}
-.focus-heading h2{font-size:19px;font-weight:650;margin:0 0 5px;color:#d8e8fc;letter-spacing:.2px}
-.focus-heading p{font-size:13px;color:#9baec5;margin:0}
-.focus-period{height:34px;background:#182536;border-color:#345273;color:#a8d1ff;flex-shrink:0}
-.focus-period select{font-size:13px;max-width:90px}
-.focus-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.focus-card{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:12px;text-align:left;min-width:0;padding:20px;border-radius:10px;border:1px solid #2d4b6c;background:linear-gradient(130deg,#182c44,#111e2f 80%);box-shadow:inset 3px 0 #78b7ff33}
-.focus-card:hover,.focus-card.active{border-color:#80baff;background:linear-gradient(130deg,#203d5e,#152a42 80%);box-shadow:inset 3px 0 #80baff}
-.focus-card-top{display:flex;align-items:center;gap:8px;width:100%}
-.focus-repo-icon{display:inline-flex;color:#87bfff}
-.focus-repo-icon svg{width:19px;height:19px}
-.focus-owner{font-size:12px;color:#92a9c4}
-.focus-card-arrow{margin-left:auto;color:#6f95be;display:inline-flex}
-.focus-card-arrow svg{width:17px;height:17px}
-.focus-card>strong{font-size:20px;font-weight:650;line-height:1.45;color:#b8d9ff;overflow-wrap:anywhere;min-width:0;width:100%}
-.focus-card-stats{display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px;font-size:12px;color:#a0b2c8}
-.focus-activity{display:inline-flex;align-items:center;gap:6px;color:#8cdeb8;background:#64ce9a0c;border:1px solid #64ce9a26;border-radius:5px;padding:3px 7px}
-.focus-activity .status-dot{background:#8cdeb8}
-.focus-activity.quiet{color:#99acc2;background:none;border-color:#385069}
-.focus-updated{font-size:12px;color:#91a8c1;margin-top:auto}
-.focus-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0 0;color:#8499b2;font-size:12px}
-.focus-bottom button{font-size:12px;color:#9dc9ff;padding:4px 0;white-space:nowrap}
-.focus-bottom button:hover{text-decoration:underline}
 .discussion-panel{scroll-margin-top:18px}
 @media(max-width:520px){
   .page-heading{align-items:flex-start}
   .page-heading .intro{max-width:240px;font-size:13px}
   .summary-label{font-size:10px}
-  .focus-heading{gap:10px;align-items:flex-start}
-  .focus-heading h2{font-size:18px}
-  .focus-heading p{font-size:12px;line-height:1.8;max-width:235px}
-  .focus-grid{grid-template-columns:minmax(0,1fr);gap:10px}
-  .focus-card{padding:17px;gap:10px}
-  .focus-card>strong{font-size:19px}
-  .focus-bottom{font-size:11px;align-items:flex-start}
   .panel-tabs{gap:16px}
   .panel-tabs button{font-size:13px}
   .search-box input{font-size:13px}
@@ -72,3 +40,13 @@
 }
 .demo-title{display:inline;text-align:left;padding:0;font:inherit;color:inherit;line-height:inherit}.demo-title:hover{color:var(--blue)}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* Recent discussion updates start blue and fade toward older updates. */
+.discussion-row,.discussion-row:hover{
+  background:linear-gradient(105deg,rgba(55,143,250,var(--recent-tint,.02)),rgba(55,143,250,var(--recent-tail,.005)));
+  box-shadow:inset 3px 0 rgba(121,184,255,var(--recent-edge,.08));
+}
+.discussion-row:hover{background-color:#162436}
+.recency-guide{display:flex;align-items:center;gap:10px;padding:11px 23px;font-size:11px;color:#8fa6c0;border-bottom:1px solid var(--line);background:#111b28}
+.recency-scale{height:6px;width:100px;border-radius:4px;background:linear-gradient(90deg,#579fe9,#233449)}
+@media(max-width:520px){.recency-guide{padding:10px 15px;font-size:10px}}

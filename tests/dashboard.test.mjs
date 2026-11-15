@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { collectDiscussions } from '../scripts/github.mjs';
-import { filterItems, isUnread, githubDiscussionUrl, summarizeRepositories } from '../lib.mjs';
+import { filterItems, isUnread, githubDiscussionUrl } from '../lib.mjs';
 
 function node(id, options = {}) {
   return { id, number: 1, title: '<img src=x onerror=alert(1)>', url: 'https://github.com/milin-chang/private/discussions/1',
@@ -64,26 +64,4 @@ test('filters combine author, repo, search, unread and saved state without chang
 test('external discussion links reject scripts and lookalike hosts', () => {
   for (const value of ['javascript:alert(1)', 'https://github.com.evil.test/a/b/discussions/1', 'https://evil.test/a/b/discussions/1', 'http://github.com/a/b/discussions/1']) assert.equal(githubDiscussionUrl(value), null);
   assert.equal(githubDiscussionUrl('https://github.com/a/b/discussions/1'), 'https://github.com/a/b/discussions/1');
-});
-test('project overview prioritizes recent discussion updates over historical volume', () => {
-  const now = Date.parse('2026-11-15T12:00:00Z');
-  const items = [
-    { repository: 'milin-chang/archived', updatedAt: '2026-09-01T00:00:00Z' },
-    { repository: 'milin-chang/archived', updatedAt: '2026-09-02T00:00:00Z' },
-    { repository: 'milin-chang/current', updatedAt: '2026-11-14T00:00:00Z' },
-    { repository: 'milin-chang/current', updatedAt: '2026-11-13T00:00:00Z' },
-    { repository: 'milin-chang/newest', updatedAt: '2026-11-15T00:00:00Z' }
-  ];
-  const repos = summarizeRepositories(items, 7, now);
-  assert.deepEqual(repos.map(repo => [repo.repository, repo.recent]), [['milin-chang/current', 2], ['milin-chang/newest', 1], ['milin-chang/archived', 0]]);
-  assert.equal(repos[0].updatedAt, '2026-11-14T00:00:00Z');
-});
-test('switching project period includes older discussions without treating future dates as activity', () => {
-  const now = Date.parse('2026-11-15T12:00:00Z');
-  const items = [
-    { repository: 'milin-chang/a', updatedAt: '2026-11-01T00:00:00Z' },
-    { repository: 'milin-chang/a', updatedAt: '2026-12-01T00:00:00Z' }
-  ];
-  assert.equal(summarizeRepositories(items, 7, now)[0].recent, 0);
-  assert.equal(summarizeRepositories(items, 30, now)[0].recent, 1);
 });
