@@ -85,9 +85,9 @@ function renderRow(item, recency) {
   const unread = isUnread(item, state.read), saved = state.saved.includes(item.id), link = githubDiscussionUrl(item.url);
   const labels = (item.labels || []).slice(0, 3).map(label => `<span class="tag">${esc(label)}</span>`).join('');
   const title = link ? `<a data-open="${esc(item.id)}" href="${esc(link)}" target="_blank" rel="noopener noreferrer">${esc(item.title)}</a>` : `<button class="demo-title" data-demo-open="${esc(item.id)}">${esc(item.title)}</button>`;
-  const tint = (0.012 + recency * 0.14).toFixed(3);
-  const tail = (0.003 + recency * 0.04).toFixed(3);
-  const edge = (0.08 + recency * 0.32).toFixed(3);
+  const tint = (0.04 + recency * 0.12).toFixed(3);
+  const tail = (0.02 + recency * 0.05).toFixed(3);
+  const edge = (0.30 + recency * 0.40).toFixed(3);
   return `<article class="discussion-row ${unread ? '' : 'is-read'}" data-id="${esc(item.id)}" style="--recent-tint:${tint};--recent-tail:${tail};--recent-edge:${edge};--repo-color:${repoColors.get(item.repository)}"><div class="discussion-icon ${item.isAnswered ? 'answered' : ''}">${icon(item.isAnswered ? 'answer' : 'discussions')}</div><div class="row-main"><div class="row-meta"><span class="repo-text" style="--repo-color:${repoColors.get(item.repository)}" title="${esc(item.repository)}">${esc(item.repository.replace('/', ' / '))}</span>${item.isPrivate ? `<span class="private-lock" title="私人儲存庫" aria-label="私人儲存庫">${icon('lock')}</span>` : ''}<time datetime="${esc(item.updatedAt)}" title="${esc(new Date(item.updatedAt).toLocaleString('zh-TW'))}">${relativeTime(item.updatedAt)}</time></div><h2>${title}${unread ? '<span class="new-dot" aria-label="未讀"></span>' : ''}</h2><div class="row-bottom">${item.category ? `<span class="tag category">${esc(item.category)}</span>` : ''}${labels}${item.isAnswered ? '<span class="tag answered-tag">已解答</span>' : ''}${item.closed ? '<span class="tag">已關閉</span>' : ''}<div class="row-stats"><span aria-label="${item.upvotes} 個讚">${icon('upvote')}${item.upvotes}</span><span aria-label="${item.comments} 則回覆">${icon('discussions')}${item.comments}</span></div></div></div><button class="save-button" data-save="${esc(item.id)}" aria-pressed="${saved}" aria-label="${saved ? '取消收藏' : '收藏'}：${esc(item.title)}" title="${saved ? '取消收藏' : '收藏討論'}">${icon('bookmark')}</button></article>`;
 }
 function emptyMarkup() {

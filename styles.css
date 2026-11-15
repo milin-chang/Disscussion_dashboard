@@ -41,14 +41,20 @@
 .demo-title{display:inline;text-align:left;padding:0;font:inherit;color:inherit;line-height:inherit}.demo-title:hover{color:var(--blue)}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition:none!important;scroll-behavior:auto!important}}
 
-/* Neutral recency shading keeps all repository text colors balanced. */
+/* Separate neutral cards from the page, with recency controlling their emphasis. */
+#discussion-list{padding:2px 0;background:#090c11}
 .discussion-row,.discussion-row:hover{
-  background:linear-gradient(105deg,rgba(205,210,217,var(--recent-tint,.012)),rgba(205,210,217,var(--recent-tail,.003)));
-  box-shadow:inset 3px 0 rgba(199,205,214,var(--recent-edge,.08));
+  margin:10px;
+  border:1px solid rgba(199,205,214,var(--recent-edge,.30));
+  border-radius:8px;
+  background:linear-gradient(105deg,rgba(205,210,217,var(--recent-tint,.04)),rgba(205,210,217,var(--recent-tail,.02))) #20252d;
+  box-shadow:inset 4px 0 rgba(199,205,214,var(--recent-edge,.30)),0 3px 10px #0003;
 }
-.discussion-row:hover{background-color:#171a20}
+.discussion-row+.discussion-row:before{display:none}
+.discussion-row:hover{background-color:#292f38;border-color:#a2acb9}
+.row-meta time,.row-stats{color:#b5bfcc}
 .recency-guide{display:flex;align-items:center;gap:10px;padding:11px 23px;font-size:11px;color:#a2a8b1;border-bottom:1px solid var(--line);background:#15181e}
-.recency-scale{height:6px;width:100px;border-radius:4px;background:linear-gradient(90deg,#89919c,#20242b)}
+.recency-scale{height:6px;width:100px;border-radius:4px;background:linear-gradient(90deg,#a4adb9,#3a424d)}
 @media(max-width:520px){.recency-guide{padding:10px 15px;font-size:10px}}
 
 /* Repository color covers names and titles; recency still controls row backgrounds. */
