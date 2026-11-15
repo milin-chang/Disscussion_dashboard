@@ -70,7 +70,7 @@
 .recent-repo-item:hover,.recent-repo-item.active{background:#20252d;border-color:#39414a}
 .recent-repo-rank{font:10px/1.8 ui-monospace,monospace;color:#6f7a89;padding-top:2px;flex-shrink:0}
 .recent-repo-info{display:flex;flex-direction:column;min-width:0;gap:4px}
-.recent-repo-name{font-size:12px;font-weight:550;color:#bdc6d2;line-height:1.65;overflow-wrap:anywhere}
+.recent-repo-name{font-size:12px;font-weight:550;color:var(--repo-color,#bdc6d2);line-height:1.65;overflow-wrap:anywhere}
 .recent-repo-time{font-size:10px;color:#87919e;line-height:1.6}
 .mobile-recent-repositories{display:none}
 @media(max-width:850px){
