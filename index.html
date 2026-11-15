@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0d1117">
+  <meta name="description" content="milin-chang 的 GitHub Discussions：把最近建立、參與和關注的討論放在一起。">
+  <title>Discussions · milin-chang</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">跳到討論清單</a>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="Discussion Desk 首頁"><img src="./favicon.svg" width="32" height="32" alt=""><span>Discussion<span class="brand-light"> Desk</span></span><span class="personal">PERSONAL</span></a>
+    <div class="top-actions"><a id="github-source" class="icon-button" href="https://github.com/milin-chang/Disscussion_dashboard" target="_blank" rel="noopener noreferrer" aria-label="開啟 GitHub 專案" data-icon="github"></a><button class="avatar" id="account-button" aria-label="查看帳戶與同步設定">m</button></div>
+  </header>
+  <div class="app-layout">
+    <aside class="sidebar" aria-label="討論導覽">
+      <div class="workspace"><div class="workspace-icon">m<span></span></div><div><strong>milin-chang</strong><span>我的討論工作台</span></div></div>
+      <p class="nav-label">WORKSPACE</p>
+      <nav class="side-nav">
+        <button data-tab="created" class="selected"><span data-icon="discussions"></span>我建立的<span class="nav-count" data-count="created">0</span></button>
+        <button data-tab="all"><span data-icon="activity"></span>與我相關<span class="nav-count" data-count="all">0</span></button>
+        <button data-tab="saved"><span data-icon="bookmark"></span>已收藏<span class="nav-count" data-count="saved">0</span></button>
+      </nav>
+      <div class="repo-heading"><p class="nav-label">REPOSITORIES</p><span id="repo-total">0</span></div>
+      <nav id="repo-nav" class="repo-nav" aria-label="依儲存庫篩選"><p class="muted small">同步後會在這裡顯示儲存庫。</p></nav>
+      <div class="sidebar-bottom"><div class="sync-health"><span class="status-dot"></span><span id="sidebar-status">等待首次同步</span></div><p>GitHub Actions · 每 3 小時更新</p><button id="setup-link"><span data-icon="settings"></span>同步設定</button></div>
+    </aside>
+    <main id="main">
+      <div class="page-heading"><div><div class="eyebrow"><span class="tiny-line"></span>YOUR CONVERSATIONS, IN ONE PLACE</div><h1>Discussions<span class="heading-dot">.</span></h1><p class="intro">最近在聊什麼，回來這裡就知道。</p></div><button class="button secondary refresh-button" id="refresh"><span data-icon="refresh"></span><span>重新讀取</span></button></div>
+      <section class="summary" aria-label="討論摘要">
+        <div class="summary-item"><span class="summary-icon blue" data-icon="discussions"></span><div><span class="summary-label">相關討論</span><strong id="stat-total">—</strong></div></div>
+        <div class="summary-item"><span class="summary-icon green" data-icon="activity"></span><div><span class="summary-label">尚未閱讀</span><strong id="stat-unread">—</strong></div><span class="summary-hint">等你回來</span></div>
+        <div class="summary-item"><span class="summary-icon purple" data-icon="repo"></span><div><span class="summary-label">跨越儲存庫</span><strong id="stat-repos">—</strong></div></div>
+      </section>
+      <div id="notice" role="status" hidden></div>
+      <section class="discussion-panel" aria-label="GitHub 討論清單">
+        <div class="panel-tabs" role="tablist" aria-label="討論範圍"><button role="tab" aria-selected="true" id="tab-created" data-tab="created"><span data-icon="edit"></span>我建立的<span data-count="created">0</span></button><button role="tab" aria-selected="false" id="tab-all" data-tab="all"><span data-icon="discussions"></span>與我相關<span data-count="all">0</span></button><button role="tab" aria-selected="false" id="tab-saved" data-tab="saved"><span data-icon="bookmark"></span>已收藏<span data-count="saved">0</span></button></div>
+        <div class="filter-area"><label class="search-box"><span data-icon="search"></span><input type="search" id="search" placeholder="搜尋討論、儲存庫或標籤…" aria-label="搜尋討論"><kbd>/</kbd></label><div class="filter-row"><div class="filter-chips"><button class="chip" id="unread" aria-pressed="false"><span class="unread-dot"></span>未讀</button><button class="chip" id="unanswered" aria-pressed="false">未解答</button><label class="select-wrap category-filter"><select id="category" aria-label="依分類篩選"><option value="">所有分類</option></select><span data-icon="chevron"></span></label><label class="select-wrap mobile-repo"><select id="repository" aria-label="依儲存庫篩選"><option value="">所有儲存庫</option></select><span data-icon="chevron"></span></label></div><label class="select-wrap sort"><span data-icon="sort"></span><select id="sort" aria-label="排序方式"><option value="updated">最近更新</option><option value="created">最新建立</option><option value="comments">最多回覆</option></select><span data-icon="chevron"></span></label></div></div>
+        <div class="list-caption"><span><strong id="result-count">0</strong> 則討論<span id="repo-filter-name"></span></span><button id="mark-all-read"><span data-icon="check"></span>全部標為已讀</button></div>
+        <div id="discussion-list" role="tabpanel" aria-labelledby="tab-created" aria-busy="true"><div class="loading-state"><span class="spinner"></span>正在讀取討論…</div></div>
+        <div class="panel-bottom"><span data-icon="shield"></span><span>原討論的存取權限由 GitHub 管理</span><span class="end-mark">YOU'RE ALL CAUGHT UP</span></div>
+      </section>
+      <footer class="page-footer"><span><span class="status-dot"></span><span id="sync-time">尚未同步</span></span><a href="https://github.com/milin-chang" target="_blank" rel="noopener noreferrer">@milin-chang<span data-icon="external"></span></a></footer>
+      <p class="data-scope">自動彙整帳號建立、留言及被提及的討論。收藏與已讀狀態儲存在目前瀏覽器。</p>
+    </main>
+  </div>
+  <dialog id="setup-dialog" aria-labelledby="setup-title"><div class="dialog-top"><span class="dialog-icon" data-icon="settings"></span><button class="icon-button close-dialog" aria-label="關閉" data-icon="close"></button></div><p class="eyebrow">SET UP ONCE, STAY IN THE LOOP</p><h2 id="setup-title">讓討論自動回到這裡</h2><p class="dialog-intro">由 GitHub Actions 每 3 小時同步 <strong>milin-chang</strong> 的 Discussions。</p><ol class="setup-steps"><li><strong>加入讀取用 Token</strong><p>在專案的 Actions Secrets 新增 <code>DISCUSSIONS_TOKEN</code>。Token 需要能讀取你想彙整的私人 repo 的 Discussions。</p><a class="text-link" id="secret-link" target="_blank" rel="noopener noreferrer">開啟 Actions Secrets <span data-icon="external"></span></a></li><li><strong>啟用 GitHub Pages</strong><p>在 Settings → Pages，把 Source 選為 <b>GitHub Actions</b>。</p><a class="text-link" id="pages-link" target="_blank" rel="noopener noreferrer">開啟 Pages 設定 <span data-icon="external"></span></a></li><li><strong>執行第一次同步</strong><p>進入 Actions → Update discussion dashboard，按下 <b>Run workflow</b>。之後就會定時更新。</p><a class="text-link" id="workflow-link" target="_blank" rel="noopener noreferrer">開啟同步工作流程 <span data-icon="external"></span></a></li></ol><div class="setup-note"><span data-icon="info"></span><p>這是公開看板，會顯示包含私人 repo 的討論標題、儲存庫名稱與統計。Token 僅供 Actions 使用。</p></div><button class="button primary close-dialog">知道了</button></dialog>
+  <div id="toast" role="status" hidden></div>
+  <noscript><p class="no-script">請啟用 JavaScript，以瀏覽、搜尋及整理討論。</p></noscript>
+</body>
+</html>

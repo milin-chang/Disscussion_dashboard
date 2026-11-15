@@ -1,0 +1,61 @@
+name: Update discussion dashboard
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '**.html'
+      - '**.css'
+      - '**.js'
+      - '**.mjs'
+      - 'package.json'
+      - 'data/**'
+      - '.github/workflows/discussions.yml'
+  schedule:
+    - cron: '17 */3 * * *'
+
+concurrency:
+  group: discussion-pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm test
+      - name: Sync milin-chang discussions
+        env:
+          GH_TOKEN: ${{ secrets.DISCUSSIONS_TOKEN }}
+          DISCUSSION_ACCOUNT: milin-chang
+          # The owner explicitly chose a public dashboard including private repo metadata.
+          INCLUDE_PRIVATE: 'true'
+        run: npm run sync
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+          retention-days: 1
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
