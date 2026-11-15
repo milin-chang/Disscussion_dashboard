@@ -51,5 +51,7 @@
 .recency-scale{height:6px;width:100px;border-radius:4px;background:linear-gradient(90deg,#579fe9,#233449)}
 @media(max-width:520px){.recency-guide{padding:10px 15px;font-size:10px}}
 
-/* Repository identity affects name text only; recency still controls row backgrounds. */
-.repo-text,.repo-nav .repo-name{color:var(--repo-color,#9dc9ff)}
+/* Repository color covers names and titles; recency still controls row backgrounds. */
+.repo-text,.repo-nav .repo-name,.discussion-row h2,.discussion-row.is-read h2{color:var(--repo-color,#9dc9ff)}
+.discussion-row h2 a{color:inherit}
+.discussion-row h2 a:hover{color:var(--repo-color,#9dc9ff);text-decoration:underline;text-underline-offset:3px}
