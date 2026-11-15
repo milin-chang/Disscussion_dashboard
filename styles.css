@@ -41,7 +41,7 @@
 .demo-title{display:inline;text-align:left;padding:0;font:inherit;color:inherit;line-height:inherit}.demo-title:hover{color:var(--blue)}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition:none!important;scroll-behavior:auto!important}}
 
-/* Original shared blue recency treatment; repository colors stay in small markers. */
+/* Original shared blue recency treatment keeps the reading surface consistent. */
 .discussion-row,.discussion-row:hover{
   background:linear-gradient(105deg,rgba(55,143,250,var(--recent-tint,.02)),rgba(55,143,250,var(--recent-tail,.005)));
   box-shadow:inset 3px 0 rgba(121,184,255,var(--recent-edge,.08));
@@ -51,13 +51,13 @@
 .recency-scale{height:6px;width:100px;border-radius:4px;background:linear-gradient(90deg,#579fe9,#233449)}
 @media(max-width:520px){.recency-guide{padding:10px 15px;font-size:10px}}
 
-/* Keep long text neutral and confine repository identity to small color dots. */
-.repo-text{color:#9dc9ff}
+/* Only the owner / repository line carries the repository identity color. */
+.repo-text{color:var(--repo-color,#9dc9ff)}
 .repo-nav .repo-name{color:#acb8c8}
-.repo-text::before,.recent-repo-name::before{content:"";display:inline-block;width:6px;height:6px;margin-right:8px;border-radius:50%;vertical-align:middle;background:var(--repo-color,#79b8ff)}
-.repo-nav .repo-bullet,.repo-nav .repo-bullet.c1,.repo-nav .repo-bullet.c2,.repo-nav .repo-bullet.c3{background:var(--repo-color,#79b8ff)}
+.repo-nav .repo-bullet,.repo-nav .repo-bullet.c1,.repo-nav .repo-bullet.c2,.repo-nav .repo-bullet.c3{background:var(--blue)}
+.discussion-row h2,.discussion-row.is-read h2{color:#e6edf3}
 .discussion-row h2 a{color:inherit}
-.discussion-row h2 a:hover{color:var(--blue);text-decoration:underline;text-underline-offset:3px}
+.discussion-row h2 a:hover{color:inherit;text-decoration:underline;text-underline-offset:3px}
 
 .recent-repositories{margin:30px 0 0}
 .recent-repo-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 12px}
