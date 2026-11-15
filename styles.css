@@ -51,8 +51,10 @@
 .recency-scale{height:6px;width:100px;border-radius:4px;background:linear-gradient(90deg,#579fe9,#233449)}
 @media(max-width:520px){.recency-guide{padding:10px 15px;font-size:10px}}
 
-/* Only the owner / repository line carries the repository identity color. */
-.repo-text{color:var(--repo-color,#9dc9ff)}
+/* The owner stays neutral; only the repository name carries its identity color. */
+.repo-text,.repo-owner{color:#a7b1bf}
+.repo-owner{font-weight:400}
+.repo-project{color:var(--repo-color,#9dc9ff)}
 .repo-nav .repo-name{color:#acb8c8}
 .repo-nav .repo-bullet,.repo-nav .repo-bullet.c1,.repo-nav .repo-bullet.c2,.repo-nav .repo-bullet.c3{background:var(--blue)}
 .discussion-row h2,.discussion-row.is-read h2{color:#e6edf3}
