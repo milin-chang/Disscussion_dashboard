@@ -1,4 +1,4 @@
-import { ACCOUNT, REPOSITORY, filterItems, isUnread, relativeTime, githubDiscussionUrl } from './lib.mjs';
+import { ACCOUNT, REPOSITORY, filterItems, isUnread, relativeTime, githubDiscussionUrl, recentRepositories } from './lib.mjs';
 
 const paths = {
   discussions: '<path d="M8 10h.01M12 10h.01M16 10h.01"/><path d="M5 4h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-8l-5 4v-4H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/>',
@@ -62,6 +62,14 @@ function clearFilters() {
   $('#search').value = ''; render();
 }
 function switchTab(tab) { state.tab = tab; render(); }
+function renderRecentRepositories() {
+  const repos = recentRepositories(snapshot.items);
+  const markup = repos.length ? repos.map((repo, index) => `<button class="recent-repo-item${state.repo === repo.repository ? ' active' : ''}" data-recent-repo="${esc(repo.repository)}" aria-pressed="${state.repo === repo.repository}" title="${esc(repo.repository)}" style="--repo-color:${repoColors.get(repo.repository)}"><span class="recent-repo-rank">${String(index + 1).padStart(2, '0')}</span><span class="recent-repo-info"><span class="recent-repo-name">${esc(repo.repository.split('/').slice(1).join('/'))}</span><span class="recent-repo-time">${relativeTime(repo.updatedAt)} · ${repo.count} 則討論</span></span></button>`).join('') : '<p class="muted small">同步後顯示最近的專案。</p>';
+  $('#recent-repo-nav').innerHTML = markup;
+  $('#mobile-recent-repo-nav').innerHTML = markup;
+  $('#recent-repo-total').textContent = repos.length;
+  $('#mobile-recent-repo-total').textContent = repos.length;
+}
 function rebuildOptions() {
   const repos = [...new Set(snapshot.items.map(item => item.repository))].sort();
   const categories = [...new Set(snapshot.items.map(item => item.category).filter(Boolean))].sort();
@@ -77,9 +85,9 @@ function renderRow(item, recency) {
   const unread = isUnread(item, state.read), saved = state.saved.includes(item.id), link = githubDiscussionUrl(item.url);
   const labels = (item.labels || []).slice(0, 3).map(label => `<span class="tag">${esc(label)}</span>`).join('');
   const title = link ? `<a data-open="${esc(item.id)}" href="${esc(link)}" target="_blank" rel="noopener noreferrer">${esc(item.title)}</a>` : `<button class="demo-title" data-demo-open="${esc(item.id)}">${esc(item.title)}</button>`;
-  const tint = (0.02 + recency * 0.24).toFixed(3);
-  const tail = (0.005 + recency * 0.07).toFixed(3);
-  const edge = (0.08 + recency * 0.72).toFixed(3);
+  const tint = (0.012 + recency * 0.14).toFixed(3);
+  const tail = (0.003 + recency * 0.04).toFixed(3);
+  const edge = (0.08 + recency * 0.32).toFixed(3);
   return `<article class="discussion-row ${unread ? '' : 'is-read'}" data-id="${esc(item.id)}" style="--recent-tint:${tint};--recent-tail:${tail};--recent-edge:${edge};--repo-color:${repoColors.get(item.repository)}"><div class="discussion-icon ${item.isAnswered ? 'answered' : ''}">${icon(item.isAnswered ? 'answer' : 'discussions')}</div><div class="row-main"><div class="row-meta"><span class="repo-text" style="--repo-color:${repoColors.get(item.repository)}" title="${esc(item.repository)}">${esc(item.repository.replace('/', ' / '))}</span>${item.isPrivate ? `<span class="private-lock" title="私人儲存庫" aria-label="私人儲存庫">${icon('lock')}</span>` : ''}<time datetime="${esc(item.updatedAt)}" title="${esc(new Date(item.updatedAt).toLocaleString('zh-TW'))}">${relativeTime(item.updatedAt)}</time></div><h2>${title}${unread ? '<span class="new-dot" aria-label="未讀"></span>' : ''}</h2><div class="row-bottom">${item.category ? `<span class="tag category">${esc(item.category)}</span>` : ''}${labels}${item.isAnswered ? '<span class="tag answered-tag">已解答</span>' : ''}${item.closed ? '<span class="tag">已關閉</span>' : ''}<div class="row-stats"><span aria-label="${item.upvotes} 個讚">${icon('upvote')}${item.upvotes}</span><span aria-label="${item.comments} 則回覆">${icon('discussions')}${item.comments}</span></div></div></div><button class="save-button" data-save="${esc(item.id)}" aria-pressed="${saved}" aria-label="${saved ? '取消收藏' : '收藏'}：${esc(item.title)}" title="${saved ? '取消收藏' : '收藏討論'}">${icon('bookmark')}</button></article>`;
 }
 function emptyMarkup() {
@@ -121,7 +129,7 @@ function render() {
   $('#sync-time').textContent = demo ? '範例資料 · 未連接 GitHub' : snapshot.generatedAt ? `上次同步：${relativeTime(snapshot.generatedAt)}` : '等待 GitHub Actions 首次同步';
   $('#sync-time').title = snapshot.generatedAt ? new Date(snapshot.generatedAt).toLocaleString('zh-TW') : '';
   $('#sidebar-status').textContent = demo ? '版型預覽中' : snapshot.generatedAt ? '已連接 GitHub Actions' : '等待首次同步';
-  rebuildOptions(); renderNotice();
+  rebuildOptions(); renderRecentRepositories(); renderNotice();
 }
 async function refresh(announce = true) {
   if (loading) return;
@@ -185,6 +193,11 @@ document.addEventListener('click', event => {
   if (b.hasAttribute('data-retry')) refresh();
   if (b.hasAttribute('data-show-all')) { clearFilters(); switchTab('all'); }
   if (b.dataset.repo) { state.repo = state.repo === b.dataset.repo ? '' : b.dataset.repo; render(); }
+  if (b.dataset.recentRepo) {
+    const repo = state.repo === b.dataset.recentRepo ? '' : b.dataset.recentRepo;
+    Object.assign(state, { repo, tab: 'all', query: '', category: '', unread: false, unanswered: false });
+    $('#search').value = ''; render();
+  }
   if (b.dataset.save) { const id = b.dataset.save, saved = state.saved.includes(id); state.saved = saved ? state.saved.filter(value => value !== id) : [...state.saved, id]; persist(); render(); notify(saved ? '已取消收藏' : '已加入收藏'); }
   const id = b.dataset.open || b.dataset.demoOpen;
   if (id) { const item = snapshot.items.find(row => row.id === id); if (item) { state.read[id] = item.updatedAt; persist(); setTimeout(render, 0); } if (b.dataset.demoOpen) notify('這是範例討論；同步後可在 GitHub 開啟原文'); }

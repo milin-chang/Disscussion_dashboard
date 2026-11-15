@@ -25,6 +25,11 @@
         <button data-tab="all"><span data-icon="activity"></span>與我相關<span class="nav-count" data-count="all">0</span></button>
         <button data-tab="saved"><span data-icon="bookmark"></span>已收藏<span class="nav-count" data-count="saved">0</span></button>
       </nav>
+      <section class="recent-repositories" aria-labelledby="recent-repo-heading">
+        <div class="recent-repo-heading"><h2 id="recent-repo-heading">Repositories recently</h2><span id="recent-repo-total">0</span></div>
+        <p class="recent-repo-caption">最近 40 則討論 · 由新到舊</p>
+        <nav id="recent-repo-nav" aria-label="最近更新的五個不同儲存庫"><p class="muted small">同步後顯示最近的專案。</p></nav>
+      </section>
       <div class="repo-heading"><p class="nav-label">REPOSITORIES</p><span id="repo-total">0</span></div>
       <nav id="repo-nav" class="repo-nav" aria-label="依儲存庫篩選"><p class="muted small">同步後會在這裡顯示儲存庫。</p></nav>
       <div class="sidebar-bottom"><div class="sync-health"><span class="status-dot"></span><span id="sidebar-status">等待首次同步</span></div><p>GitHub Actions · 每 3 小時更新</p><button id="setup-link"><span data-icon="settings"></span>同步設定</button></div>
@@ -36,6 +41,7 @@
         <div class="summary-item"><span class="summary-icon green" data-icon="activity"></span><div><span class="summary-label">尚未閱讀</span><strong id="stat-unread">—</strong></div><span class="summary-hint">等你回來</span></div>
         <div class="summary-item"><span class="summary-icon purple" data-icon="repo"></span><div><span class="summary-label">跨越儲存庫</span><strong id="stat-repos">—</strong></div></div>
       </section>
+      <details class="mobile-recent-repositories"><summary>Repositories recently<span id="mobile-recent-repo-total">0</span><span data-icon="chevron"></span></summary><p class="recent-repo-caption">最近 40 則討論 · 由新到舊</p><nav id="mobile-recent-repo-nav" aria-label="最近更新的五個不同儲存庫"></nav></details>
       <div id="notice" role="status" hidden></div>
       <section class="discussion-panel" aria-label="GitHub 討論清單">
         <div class="panel-tabs" role="tablist" aria-label="討論範圍"><button role="tab" aria-selected="true" id="tab-created" data-tab="created"><span data-icon="edit"></span>我建立的<span data-count="created">0</span></button><button role="tab" aria-selected="false" id="tab-all" data-tab="all"><span data-icon="discussions"></span>與我相關<span data-count="all">0</span></button><button role="tab" aria-selected="false" id="tab-saved" data-tab="saved"><span data-icon="bookmark"></span>已收藏<span data-count="saved">0</span></button></div>

@@ -1,5 +1,17 @@
 export const ACCOUNT = 'milin-chang';
 export const REPOSITORY = 'milin-chang/Disscussion_dashboard';
+export function recentRepositories(items, discussionLimit = 40, repoLimit = 5) {
+  const recent = items.filter(item => item.repository && Number.isFinite(Date.parse(item.updatedAt)))
+    .sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
+    .slice(0, discussionLimit);
+  const repos = new Map();
+  for (const item of recent) {
+    const repo = repos.get(item.repository);
+    if (repo) repo.count++;
+    else repos.set(item.repository, { repository: item.repository, updatedAt: item.updatedAt, count: 1 });
+  }
+  return [...repos.values()].slice(0, repoLimit);
+}
 export function isUnread(item, read = {}) {
   return !read[item.id] || Date.parse(item.updatedAt) > Date.parse(read[item.id]);
 }

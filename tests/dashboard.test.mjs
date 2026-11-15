@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { collectDiscussions } from '../scripts/github.mjs';
-import { filterItems, isUnread, githubDiscussionUrl } from '../lib.mjs';
+import { filterItems, isUnread, githubDiscussionUrl, recentRepositories } from '../lib.mjs';
 
 function node(id, options = {}) {
   return { id, number: 1, title: '<img src=x onerror=alert(1)>', url: 'https://github.com/milin-chang/private/discussions/1',
@@ -64,4 +64,21 @@ test('filters combine author, repo, search, unread and saved state without chang
 test('external discussion links reject scripts and lookalike hosts', () => {
   for (const value of ['javascript:alert(1)', 'https://github.com.evil.test/a/b/discussions/1', 'https://evil.test/a/b/discussions/1', 'http://github.com/a/b/discussions/1']) assert.equal(githubDiscussionUrl(value), null);
   assert.equal(githubDiscussionUrl('https://github.com/a/b/discussions/1'), 'https://github.com/a/b/discussions/1');
+});
+test('recent repositories are five distinct repos ordered by their most recent discussion', () => {
+  const row = (repository, day) => ({ repository, updatedAt: `2026-11-${String(day).padStart(2, '0')}T00:00:00Z` });
+  const items = [row('c', 10), row('b', 9), row('a', 15), row('a', 14), row('b', 13), row('d', 8), row('e', 7), row('f', 6)];
+  const original = [...items];
+  const repos = recentRepositories(items);
+  assert.deepEqual(repos.map(repo => repo.repository), ['a', 'b', 'c', 'd', 'e']);
+  assert.equal(repos[0].updatedAt, '2026-11-15T00:00:00Z');
+  assert.equal(repos[0].count, 2);
+  assert.equal(repos[1].count, 2);
+  assert.deepEqual(items, original);
+});
+test('recent repository selection stops at forty discussions before deduplicating repos', () => {
+  const items = Array.from({ length: 40 }, (_, i) => ({ repository: 'same', updatedAt: new Date(Date.UTC(2026, 10, 15, 0, i)).toISOString() }));
+  items.push({ repository: 'outside-window', updatedAt: '2026-11-14T23:00:00Z' });
+  assert.deepEqual(recentRepositories(items), [{ repository: 'same', updatedAt: '2026-11-15T00:39:00.000Z', count: 40 }]);
+  assert.deepEqual(recentRepositories([]), []);
 });
