@@ -35,6 +35,20 @@ function loadState() {
 let state = { ...loadState(), tab: 'created', query: '', repo: '', category: '', unanswered: false, unread: false, sort: 'updated' };
 let snapshot = { items: [], generatedAt: null, coverage: {} };
 let realSnapshot = null, demo = false, loadError = false, loading = false, toastTimer;
+const repoPalette = ['#79b8ff', '#d2a8ff', '#7ee787', '#ffa657', '#ff9bce', '#76e3ea', '#e8d677', '#b6a4ff', '#ffaaa5', '#a8d98a', '#8fc9ff', '#d4b0d9'];
+const repoColors = new Map();
+function updateRepoColors() {
+  const used = new Set(repoColors.values());
+  for (const repo of [...new Set(snapshot.items.map(item => item.repository))].sort()) {
+    if (repoColors.has(repo)) continue;
+    let hash = 2166136261;
+    for (const char of repo) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619) >>> 0;
+    let index = hash % repoPalette.length;
+    for (let offset = 0; offset < repoPalette.length && used.has(repoPalette[index]); offset++) index = (index + 1) % repoPalette.length;
+    const color = used.size < repoPalette.length ? repoPalette[index] : `hsl(${hash % 360} 75% 77%)`;
+    repoColors.set(repo, color); used.add(color);
+  }
+}
 function hydrateIcons(root = document) { root.querySelectorAll('[data-icon]').forEach(el => { el.innerHTML = icon(el.dataset.icon); }); }
 function notify(message) { $('#toast').textContent = message; $('#toast').hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { $('#toast').hidden = true; }, 3300); }
 function persist() {
@@ -57,7 +71,7 @@ function rebuildOptions() {
   if (!categories.includes(state.category)) state.category = '';
   $('#repository').value = state.repo; $('#category').value = state.category;
   $('#repo-total').textContent = repos.length;
-  $('#repo-nav').innerHTML = repos.length ? repos.map((repo, i) => `<button data-repo="${esc(repo)}" class="${state.repo === repo ? 'active' : ''}" title="${esc(repo)}"><span class="repo-bullet c${i % 4}"></span><span class="repo-name">${esc(repo.split('/').slice(1).join('/'))}</span><span class="repo-number">${snapshot.items.filter(item => item.repository === repo).length}</span></button>`).join('') : '<p class="muted small">同步後會在這裡顯示儲存庫。</p>';
+  $('#repo-nav').innerHTML = repos.length ? repos.map((repo, i) => `<button data-repo="${esc(repo)}" class="${state.repo === repo ? 'active' : ''}" title="${esc(repo)}"><span class="repo-bullet c${i % 4}"></span><span class="repo-name" style="--repo-color:${repoColors.get(repo)}">${esc(repo.split('/').slice(1).join('/'))}</span><span class="repo-number">${snapshot.items.filter(item => item.repository === repo).length}</span></button>`).join('') : '<p class="muted small">同步後會在這裡顯示儲存庫。</p>';
 }
 function renderRow(item, recency) {
   const unread = isUnread(item, state.read), saved = state.saved.includes(item.id), link = githubDiscussionUrl(item.url);
@@ -66,7 +80,7 @@ function renderRow(item, recency) {
   const tint = (0.02 + recency * 0.24).toFixed(3);
   const tail = (0.005 + recency * 0.07).toFixed(3);
   const edge = (0.08 + recency * 0.72).toFixed(3);
-  return `<article class="discussion-row ${unread ? '' : 'is-read'}" data-id="${esc(item.id)}" style="--recent-tint:${tint};--recent-tail:${tail};--recent-edge:${edge}"><div class="discussion-icon ${item.isAnswered ? 'answered' : ''}">${icon(item.isAnswered ? 'answer' : 'discussions')}</div><div class="row-main"><div class="row-meta"><span class="repo-text" title="${esc(item.repository)}">${esc(item.repository.replace('/', ' / '))}</span>${item.isPrivate ? `<span class="private-lock" title="私人儲存庫" aria-label="私人儲存庫">${icon('lock')}</span>` : ''}<time datetime="${esc(item.updatedAt)}" title="${esc(new Date(item.updatedAt).toLocaleString('zh-TW'))}">${relativeTime(item.updatedAt)}</time></div><h2>${title}${unread ? '<span class="new-dot" aria-label="未讀"></span>' : ''}</h2><div class="row-bottom">${item.category ? `<span class="tag category">${esc(item.category)}</span>` : ''}${labels}${item.isAnswered ? '<span class="tag answered-tag">已解答</span>' : ''}${item.closed ? '<span class="tag">已關閉</span>' : ''}<div class="row-stats"><span aria-label="${item.upvotes} 個讚">${icon('upvote')}${item.upvotes}</span><span aria-label="${item.comments} 則回覆">${icon('discussions')}${item.comments}</span></div></div></div><button class="save-button" data-save="${esc(item.id)}" aria-pressed="${saved}" aria-label="${saved ? '取消收藏' : '收藏'}：${esc(item.title)}" title="${saved ? '取消收藏' : '收藏討論'}">${icon('bookmark')}</button></article>`;
+  return `<article class="discussion-row ${unread ? '' : 'is-read'}" data-id="${esc(item.id)}" style="--recent-tint:${tint};--recent-tail:${tail};--recent-edge:${edge}"><div class="discussion-icon ${item.isAnswered ? 'answered' : ''}">${icon(item.isAnswered ? 'answer' : 'discussions')}</div><div class="row-main"><div class="row-meta"><span class="repo-text" style="--repo-color:${repoColors.get(item.repository)}" title="${esc(item.repository)}">${esc(item.repository.replace('/', ' / '))}</span>${item.isPrivate ? `<span class="private-lock" title="私人儲存庫" aria-label="私人儲存庫">${icon('lock')}</span>` : ''}<time datetime="${esc(item.updatedAt)}" title="${esc(new Date(item.updatedAt).toLocaleString('zh-TW'))}">${relativeTime(item.updatedAt)}</time></div><h2>${title}${unread ? '<span class="new-dot" aria-label="未讀"></span>' : ''}</h2><div class="row-bottom">${item.category ? `<span class="tag category">${esc(item.category)}</span>` : ''}${labels}${item.isAnswered ? '<span class="tag answered-tag">已解答</span>' : ''}${item.closed ? '<span class="tag">已關閉</span>' : ''}<div class="row-stats"><span aria-label="${item.upvotes} 個讚">${icon('upvote')}${item.upvotes}</span><span aria-label="${item.comments} 則回覆">${icon('discussions')}${item.comments}</span></div></div></div><button class="save-button" data-save="${esc(item.id)}" aria-pressed="${saved}" aria-label="${saved ? '取消收藏' : '收藏'}：${esc(item.title)}" title="${saved ? '取消收藏' : '收藏討論'}">${icon('bookmark')}</button></article>`;
 }
 function emptyMarkup() {
   if (loadError && !snapshot.generatedAt && !demo) return `<div class="empty-state error-state"><div class="empty-icon">${icon('info')}</div><h2>暫時無法讀取討論</h2><p>資料讀取失敗，請檢查網路連線後再試一次。</p><button class="button primary" data-retry>重新讀取</button></div>`;
@@ -86,6 +100,7 @@ function renderNotice() {
 }
 function render() {
   const items = snapshot.items, visible = filterItems(items, state);
+  updateRepoColors();
   // Use the full snapshot so filtering or changing sort never changes a discussion's shade.
   // Equal update times receive the same shade; the newest dates are most prominent.
   const dates = [...new Set(items.map(item => Date.parse(item.updatedAt)))].sort((a, b) => b - a);

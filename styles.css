@@ -50,3 +50,6 @@
 .recency-guide{display:flex;align-items:center;gap:10px;padding:11px 23px;font-size:11px;color:#8fa6c0;border-bottom:1px solid var(--line);background:#111b28}
 .recency-scale{height:6px;width:100px;border-radius:4px;background:linear-gradient(90deg,#579fe9,#233449)}
 @media(max-width:520px){.recency-guide{padding:10px 15px;font-size:10px}}
+
+/* Repository identity affects name text only; recency still controls row backgrounds. */
+.repo-text,.repo-nav .repo-name{color:var(--repo-color,#9dc9ff)}
