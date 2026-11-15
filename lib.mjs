@@ -1,5 +1,19 @@
 export const ACCOUNT = 'milin-chang';
 export const REPOSITORY = 'milin-chang/Disscussion_dashboard';
+export function summarizeRepositories(items, days = 7, now = Date.now()) {
+  const cutoff = now - days * 86400000;
+  const repos = new Map();
+  for (const item of items) {
+    const updated = Date.parse(item.updatedAt);
+    if (!Number.isFinite(updated)) continue;
+    const repo = repos.get(item.repository) || { repository: item.repository, total: 0, recent: 0, updatedAt: item.updatedAt };
+    repo.total++;
+    if (updated >= cutoff && updated <= now) repo.recent++;
+    if (updated > Date.parse(repo.updatedAt)) repo.updatedAt = item.updatedAt;
+    repos.set(item.repository, repo);
+  }
+  return [...repos.values()].sort((a, b) => b.recent - a.recent || Date.parse(b.updatedAt) - Date.parse(a.updatedAt) || a.repository.localeCompare(b.repository));
+}
 export function isUnread(item, read = {}) {
   return !read[item.id] || Date.parse(item.updatedAt) > Date.parse(read[item.id]);
 }

@@ -1,4 +1,4 @@
-import { ACCOUNT, REPOSITORY, filterItems, isUnread, relativeTime, githubDiscussionUrl } from './lib.mjs';
+import { ACCOUNT, REPOSITORY, filterItems, isUnread, relativeTime, githubDiscussionUrl, summarizeRepositories } from './lib.mjs';
 
 const paths = {
   discussions: '<path d="M8 10h.01M12 10h.01M16 10h.01"/><path d="M5 4h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-8l-5 4v-4H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/>',
@@ -35,6 +35,21 @@ function loadState() {
 let state = { ...loadState(), tab: 'created', query: '', repo: '', category: '', unanswered: false, unread: false, sort: 'updated' };
 let snapshot = { items: [], generatedAt: null, coverage: {} };
 let realSnapshot = null, demo = false, loadError = false, loading = false, toastTimer;
+let focusDays = 7, focusExpanded = false;
+function renderFocus() {
+  const repos = summarizeRepositories(snapshot.items, focusDays);
+  $('.focus-section').hidden = !repos.length;
+  if (!repos.length) return;
+  const active = repos.filter(repo => repo.recent > 0);
+  $('#focus-description').textContent = active.length
+    ? `近 ${focusDays} 天，${active.length} 個專案有討論更新。`
+    : `近 ${focusDays} 天沒有討論更新，以下顯示最近曾討論的專案。`;
+  const shown = focusExpanded ? repos : repos.slice(0, 4);
+  $('#focus-grid').innerHTML = shown.map(repo => `<button class="focus-card${state.repo === repo.repository ? ' active' : ''}" data-focus-repo="${esc(repo.repository)}" aria-pressed="${state.repo === repo.repository}"><span class="focus-card-top"><span class="focus-repo-icon">${icon('repo')}</span><span class="focus-owner">${esc(repo.repository.split('/')[0])}</span><span class="focus-card-arrow">${icon('arrow')}</span></span><strong>${esc(repo.repository.split('/').slice(1).join('/'))}</strong><span class="focus-card-stats"><span class="focus-activity${repo.recent ? '' : ' quiet'}">${repo.recent ? `<span class="status-dot"></span>近 ${focusDays} 天 ${repo.recent} 則更新` : `近 ${focusDays} 天無更新`}</span><span>共 ${repo.total} 則討論</span></span><span class="focus-updated">最近更新 · ${relativeTime(repo.updatedAt)}</span></button>`).join('');
+  $('#focus-expand').hidden = repos.length <= 4;
+  $('#focus-expand').textContent = focusExpanded ? '收起專案' : `查看全部 ${repos.length} 個專案`;
+  $('#focus-expand').setAttribute('aria-expanded', String(focusExpanded));
+}
 function hydrateIcons(root = document) { root.querySelectorAll('[data-icon]').forEach(el => { el.innerHTML = icon(el.dataset.icon); }); }
 function notify(message) { $('#toast').textContent = message; $('#toast').hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { $('#toast').hidden = true; }, 3300); }
 function persist() {
@@ -99,7 +114,7 @@ function render() {
   $('#sync-time').textContent = demo ? '範例資料 · 未連接 GitHub' : snapshot.generatedAt ? `上次同步：${relativeTime(snapshot.generatedAt)}` : '等待 GitHub Actions 首次同步';
   $('#sync-time').title = snapshot.generatedAt ? new Date(snapshot.generatedAt).toLocaleString('zh-TW') : '';
   $('#sidebar-status').textContent = demo ? '版型預覽中' : snapshot.generatedAt ? '已連接 GitHub Actions' : '等待首次同步';
-  rebuildOptions(); renderNotice();
+  rebuildOptions(); renderNotice(); renderFocus();
 }
 async function refresh(announce = true) {
   if (loading) return;
@@ -153,6 +168,8 @@ $('#category').addEventListener('change', e => { state.category = e.target.value
 $('#repository').addEventListener('change', e => { state.repo = e.target.value; render(); });
 $('#sort').addEventListener('change', e => { state.sort = e.target.value; render(); });
 $('#refresh').addEventListener('click', () => refresh());
+$('#focus-period').addEventListener('change', e => { focusDays = Number(e.target.value); renderFocus(); });
+$('#focus-expand').addEventListener('click', () => { focusExpanded = !focusExpanded; renderFocus(); });
 $('#mark-all-read').addEventListener('click', () => { const visible = filterItems(snapshot.items, state); visible.forEach(item => { state.read[item.id] = item.updatedAt; }); persist(); render(); notify(`已將 ${visible.length} 則討論標為已讀`); });
 document.addEventListener('click', event => {
   const b = event.target.closest('button, a'); if (!b) return;
@@ -163,6 +180,11 @@ document.addEventListener('click', event => {
   if (b.hasAttribute('data-retry')) refresh();
   if (b.hasAttribute('data-show-all')) { clearFilters(); switchTab('all'); }
   if (b.dataset.repo) { state.repo = state.repo === b.dataset.repo ? '' : b.dataset.repo; render(); }
+  if (b.dataset.focusRepo) {
+    Object.assign(state, { repo: b.dataset.focusRepo, tab: 'all', query: '', category: '', unread: false, unanswered: false });
+    $('#search').value = ''; render();
+    $('.discussion-panel').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
+  }
   if (b.dataset.save) { const id = b.dataset.save, saved = state.saved.includes(id); state.saved = saved ? state.saved.filter(value => value !== id) : [...state.saved, id]; persist(); render(); notify(saved ? '已取消收藏' : '已加入收藏'); }
   const id = b.dataset.open || b.dataset.demoOpen;
   if (id) { const item = snapshot.items.find(row => row.id === id); if (item) { state.read[id] = item.updatedAt; persist(); setTimeout(render, 0); } if (b.dataset.demoOpen) notify('這是範例討論；同步後可在 GitHub 開啟原文'); }

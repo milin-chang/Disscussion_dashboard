@@ -30,7 +30,12 @@
       <div class="sidebar-bottom"><div class="sync-health"><span class="status-dot"></span><span id="sidebar-status">等待首次同步</span></div><p>GitHub Actions · 每 3 小時更新</p><button id="setup-link"><span data-icon="settings"></span>同步設定</button></div>
     </aside>
     <main id="main">
-      <div class="page-heading"><div><div class="eyebrow"><span class="tiny-line"></span>YOUR CONVERSATIONS, IN ONE PLACE</div><h1>Discussions<span class="heading-dot">.</span></h1><p class="intro">最近在聊什麼，回來這裡就知道。</p></div><button class="button secondary refresh-button" id="refresh"><span data-icon="refresh"></span><span>重新讀取</span></button></div>
+      <div class="page-heading"><div><div class="eyebrow"><span class="tiny-line"></span>FOLLOW YOUR FOCUS</div><h1>最近聚焦<span class="heading-dot">.</span></h1><p class="intro">從最近的討論，看見這段時間關注的專案。</p></div><button class="button secondary refresh-button" id="refresh"><span data-icon="refresh"></span><span>重新讀取</span></button></div>
+      <section class="focus-section" aria-labelledby="focus-title" hidden>
+        <div class="focus-heading"><div><h2 id="focus-title">最近在關注哪些 repo？</h2><p id="focus-description">依最近更新的討論整理專案。</p></div><label class="select-wrap focus-period"><select id="focus-period" aria-label="專案活動統計期間"><option value="7">近 7 天</option><option value="30">近 30 天</option></select><span data-icon="chevron"></span></label></div>
+        <div id="focus-grid" class="focus-grid"></div>
+        <div class="focus-bottom"><span>依期間內有更新的討論數排序 · 點專案查看討論</span><button id="focus-expand" aria-expanded="false">查看全部專案</button></div>
+      </section>
       <section class="summary" aria-label="討論摘要">
         <div class="summary-item"><span class="summary-icon blue" data-icon="discussions"></span><div><span class="summary-label">相關討論</span><strong id="stat-total">—</strong></div></div>
         <div class="summary-item"><span class="summary-icon green" data-icon="activity"></span><div><span class="summary-label">尚未閱讀</span><strong id="stat-unread">—</strong></div><span class="summary-hint">等你回來</span></div>
