@@ -1,5 +1,10 @@
 export const ACCOUNT = 'milin-chang';
 export const REPOSITORY = 'milin-chang/Disscussion_dashboard';
+export function snapshotFreshness(generatedAt, now = Date.now()) {
+  const timestamp = Date.parse(generatedAt);
+  if (!Number.isFinite(timestamp)) return 'missing';
+  return now - timestamp > 90 * 60000 ? 'stale' : 'fresh';
+}
 export function recentRepositories(items, discussionLimit = 40, repoLimit = 5) {
   const recent = items.filter(item => item.repository && Number.isFinite(Date.parse(item.updatedAt)))
     .sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))

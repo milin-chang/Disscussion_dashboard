@@ -27,11 +27,11 @@
 
 ## 頻率與額度
 
-排程為 `17 */3 * * *`（UTC），每天約 8 次；GitHub 排程可能延遲，沒有精確時間保證。可隨時使用 Run workflow 手動同步。
+排程為 `17,47 * * * *`（UTC），每天目標 48 次；GitHub 排程可能延遲，沒有精確時間保證。可隨時使用 Run workflow 手動同步。
 
 此 workflow 使用 `ubuntu-latest` 標準 runner，在**公開 repo** 執行時，標準 Actions 運算免費；它所讀取的來源 repo 可以是私人 repo。沒有使用大型 runner、cache 或另外上傳長期保存的資料 artifact。Pages artifact 保留 1 天。
 
-網站的「重新讀取」只讀取已部署的 JSON，不會啟動 workflow，也不是即時重新查詢 GitHub。開啟中的頁面每 5 分鐘重新讀取一次。資料超過 6 小時未更新時會顯示提醒。
+網站的「重新讀取」只讀取已部署的 JSON，不會啟動 workflow，也不是即時重新查詢 GitHub。開啟中的頁面每 5 分鐘重新讀取一次。資料超過 90 分鐘未同步時會顯示過期提醒，頁首會顯示實際同步時間與 GitHub Actions 連結。
 
 ## 本機執行
 

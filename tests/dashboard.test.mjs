@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { collectDiscussions } from '../scripts/github.mjs';
-import { filterItems, isUnread, githubDiscussionUrl, recentRepositories } from '../lib.mjs';
+import { filterItems, isUnread, githubDiscussionUrl, recentRepositories, snapshotFreshness } from '../lib.mjs';
 
 function node(id, options = {}) {
   return { id, number: 1, title: '<img src=x onerror=alert(1)>', url: 'https://github.com/milin-chang/private/discussions/1',
@@ -81,4 +81,12 @@ test('recent repository selection stops at forty discussions before deduplicatin
   items.push({ repository: 'outside-window', updatedAt: '2026-11-14T23:00:00Z' });
   assert.deepEqual(recentRepositories(items), [{ repository: 'same', updatedAt: '2026-11-15T00:39:00.000Z', count: 40 }]);
   assert.deepEqual(recentRepositories([]), []);
+});
+test('source snapshots show stale after ninety minutes regardless of discussion activity dates', () => {
+  const now = Date.parse('2026-11-17T04:00:00Z');
+  assert.equal(snapshotFreshness('2026-11-17T03:50:00Z', now), 'fresh');
+  assert.equal(snapshotFreshness('2026-11-17T02:30:00Z', now), 'fresh');
+  assert.equal(snapshotFreshness('2026-11-17T02:29:59Z', now), 'stale');
+  assert.equal(snapshotFreshness(null, now), 'missing');
+  assert.equal(snapshotFreshness('invalid', now), 'missing');
 });

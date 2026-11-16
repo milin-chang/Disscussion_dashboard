@@ -1,4 +1,4 @@
-import { ACCOUNT, REPOSITORY, filterItems, isUnread, relativeTime, githubDiscussionUrl, recentRepositories } from './lib.mjs';
+import { ACCOUNT, REPOSITORY, filterItems, isUnread, relativeTime, githubDiscussionUrl, recentRepositories, snapshotFreshness } from './lib.mjs';
 
 const paths = {
   discussions: '<path d="M8 10h.01M12 10h.01M16 10h.01"/><path d="M5 4h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-8l-5 4v-4H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/>',
@@ -102,7 +102,7 @@ function renderNotice() {
   if (demo) n.innerHTML = `${icon('info')}<p><strong>版型預覽</strong> · 以下為參考圖片延伸的範例資料，並非帳號的即時同步結果。</p><button data-exit-demo>離開預覽</button>`;
   else if (loadError) n.innerHTML = `${icon('info')}<p>最新資料讀取失敗，目前保留上次顯示的內容。</p><button data-retry>重試</button>`;
   else if (snapshot.coverage?.truncated) n.innerHTML = `${icon('info')}<p>顯示最近 ${snapshot.items.length} 則相關討論。GitHub 搜尋最多可取得 1,000 則結果。</p>`;
-  else if (snapshot.generatedAt && Date.now() - Date.parse(snapshot.generatedAt) > 6 * 3600000) n.innerHTML = `${icon('info')}<p>資料已超過 6 小時未更新，請查看 Actions 同步狀態。</p><button data-setup>查看設定</button>`;
+  else if (snapshotFreshness(snapshot.generatedAt) === 'stale') n.innerHTML = `${icon('info')}<p>來源資料已超過 90 分鐘未同步，可能缺少新討論。「重新讀取」只讀取已發布資料；可到 GitHub Actions 按 Run workflow 立即同步。</p><a class="text-link" href="https://github.com/${REPOSITORY}/actions/workflows/discussions.yml" target="_blank" rel="noopener noreferrer">前往同步</a>`;
   else { n.hidden = true; return; }
   n.hidden = false;
 }
@@ -117,6 +117,10 @@ function render() {
   $$('[data-count]').forEach(el => { el.textContent = counts[el.dataset.count]; });
   $$('[data-tab]').forEach(el => { const active = el.dataset.tab === state.tab; if (el.getAttribute('role') === 'tab') { el.setAttribute('aria-selected', String(active)); el.tabIndex = active ? 0 : -1; } else el.classList.toggle('selected', active); });
   document.body.classList.toggle('has-data', Boolean(snapshot.generatedAt) && !demo);
+  const stale = !demo && snapshotFreshness(snapshot.generatedAt) === 'stale';
+  document.body.classList.toggle('data-stale', stale);
+  $('#sync-health-label').textContent = demo ? '版型預覽 · 範例資料' : !snapshot.generatedAt ? '等待首次資料同步' : `${stale ? '資料已過期 · ' : ''}${relativeTime(snapshot.generatedAt)}完成同步（${new Date(snapshot.generatedAt).toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}）`;
+  $('#sync-health-label').title = '目標每 30 分鐘嘗試同步；GitHub 排程可能延遲。討論上的時間是該討論的更新時間。';
   $('#stat-total').textContent = items.length;
   $('#stat-unread').textContent = items.filter(item => isUnread(item, state.read)).length;
   $('#stat-repos').textContent = new Set(items.map(item => item.repository)).size;
@@ -128,7 +132,7 @@ function render() {
   $('#mark-all-read').disabled = !visible.some(item => isUnread(item, state.read));
   $('#sync-time').textContent = demo ? '範例資料 · 未連接 GitHub' : snapshot.generatedAt ? `上次同步：${relativeTime(snapshot.generatedAt)}` : '等待 GitHub Actions 首次同步';
   $('#sync-time').title = snapshot.generatedAt ? new Date(snapshot.generatedAt).toLocaleString('zh-TW') : '';
-  $('#sidebar-status').textContent = demo ? '版型預覽中' : snapshot.generatedAt ? '已連接 GitHub Actions' : '等待首次同步';
+  $('#sidebar-status').textContent = demo ? '版型預覽中' : stale ? '來源資料已過期' : snapshot.generatedAt ? '已完成資料同步' : '等待首次同步';
   rebuildOptions(); renderRecentRepositories(); renderNotice();
 }
 async function refresh(announce = true) {
@@ -142,7 +146,7 @@ async function refresh(announce = true) {
     for (const item of next.items) if (!item.id || typeof item.title !== 'string' || typeof item.repository !== 'string' || typeof item.author !== 'string' || !Number.isFinite(Date.parse(item.updatedAt))) throw new Error('Invalid discussion');
     if (next.generatedAt !== null && !Number.isFinite(Date.parse(next.generatedAt))) throw new Error('Invalid timestamp');
     realSnapshot = next; if (!demo) snapshot = next; loadError = false;
-    if (announce) notify(next.generatedAt ? '已讀取最新的同步資料' : '尚未完成首次同步，請先設定 GitHub Actions');
+    if (announce) notify(!next.generatedAt ? '尚未完成首次同步，請先設定 GitHub Actions' : snapshotFreshness(next.generatedAt) === 'stale' ? '看板資料已過期；請到 GitHub Actions 啟動同步' : '已重新讀取看板；GitHub 來源資料依排程同步');
   } catch { loadError = true; if (announce) notify('無法讀取資料，請稍後再試'); }
   finally { loading = false; $('#refresh').disabled = false; render(); }
 }
@@ -166,6 +170,7 @@ hydrateIcons();
 $('#secret-link').href = `https://github.com/${REPOSITORY}/settings/secrets/actions`;
 $('#pages-link').href = `https://github.com/${REPOSITORY}/settings/pages`;
 $('#workflow-link').href = `https://github.com/${REPOSITORY}/actions/workflows/discussions.yml`;
+$('#sync-now-link').href = `https://github.com/${REPOSITORY}/actions/workflows/discussions.yml`;
 $('#setup-link').addEventListener('click', openSetup); $('#account-button').addEventListener('click', openSetup);
 $$('.close-dialog').forEach(b => b.addEventListener('click', () => $('#setup-dialog').close()));
 $('#setup-dialog').addEventListener('click', event => { if (event.target === $('#setup-dialog')) { const r = $('#setup-dialog').getBoundingClientRect(); if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) $('#setup-dialog').close(); } });
