@@ -69,6 +69,14 @@
 .data-stale .status-dot{background:#d4aa65;box-shadow:none}
 .data-stale .sync-status #sync-health-label{color:#d4aa65}
 @media(max-width:520px){.sync-status{font-size:10px;gap:6px;margin-bottom:18px}.sync-status a{font-size:10px}}
+.refresh-feedback{display:flex;align-items:flex-start;gap:12px;margin:-8px 0 22px;padding:11px 13px;border:1px solid #354961;border-radius:7px;background:#152235;color:#acc6e6;font-size:12px;line-height:1.8}
+.refresh-feedback[hidden]{display:none}
+#refresh-feedback-text{flex:1;min-width:0}
+#stop-sync-watch{font-size:11px;white-space:nowrap;padding:3px 0;color:#b9cde6;text-decoration:underline}
+#stop-sync-watch[hidden]{display:none}
+.refresh-button[aria-busy=true] [data-icon=refresh]{animation:spin 1s linear infinite}
+@media(prefers-reduced-motion:reduce){.refresh-button[aria-busy=true] [data-icon=refresh]{animation:none}}
+@media(max-width:520px){.refresh-button{padding:8px;font-size:10px}.refresh-feedback{font-size:11px;gap:8px}}
 
 .recent-repositories{margin:30px 0 0}
 .recent-repo-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 12px}

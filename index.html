@@ -35,8 +35,9 @@
       <div class="sidebar-bottom"><div class="sync-health"><span class="status-dot"></span><span id="sidebar-status">等待首次同步</span></div><p>GitHub Actions · 每 30 分鐘嘗試更新</p><button id="setup-link"><span data-icon="settings"></span>同步設定</button></div>
     </aside>
     <main id="main">
-      <div class="page-heading"><div><div class="eyebrow"><span class="tiny-line"></span>FOLLOW YOUR FOCUS</div><h1>最近聚焦<span class="heading-dot">.</span></h1><p class="intro">從最近的討論，看見這段時間關注的專案。</p></div><button class="button secondary refresh-button" id="refresh"><span data-icon="refresh"></span><span>重新讀取</span></button></div>
-      <div class="sync-status" role="status"><span class="status-dot"></span><span id="sync-health-label">正在確認資料同步時間…</span><a id="sync-now-link" target="_blank" rel="noopener noreferrer" title="開啟 GitHub Actions 後按 Run workflow 啟動同步">到 GitHub 同步<span data-icon="external"></span></a></div>
+      <div class="page-heading"><div><div class="eyebrow"><span class="tiny-line"></span>FOLLOW YOUR FOCUS</div><h1>最近聚焦<span class="heading-dot">.</span></h1><p class="intro">從最近的討論，看見這段時間關注的專案。</p></div><button class="button secondary refresh-button" id="refresh" title="檢查是否已有新的同步結果，不會啟動 GitHub 同步"><span data-icon="refresh"></span><span id="refresh-label">檢查看板更新</span></button></div>
+      <div class="sync-status" role="status"><span class="status-dot"></span><span id="sync-health-label">正在確認資料同步時間…</span><a id="sync-now-link" target="_blank" rel="noopener noreferrer" title="開啟 GitHub Actions 後按 Run workflow 啟動同步">同步 GitHub<span data-icon="external"></span></a></div>
+      <div id="refresh-feedback" class="refresh-feedback" role="status" hidden><span id="refresh-feedback-text"></span><button id="stop-sync-watch" hidden>停止等候</button></div>
       <section class="summary" aria-label="討論摘要">
         <div class="summary-item"><span class="summary-icon blue" data-icon="discussions"></span><div><span class="summary-label">相關討論</span><strong id="stat-total">—</strong></div></div>
         <div class="summary-item"><span class="summary-icon green" data-icon="activity"></span><div><span class="summary-label">尚未閱讀</span><strong id="stat-unread">—</strong></div><span class="summary-hint">等你回來</span></div>

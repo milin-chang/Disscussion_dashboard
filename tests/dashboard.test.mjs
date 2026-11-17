@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { collectDiscussions } from '../scripts/github.mjs';
-import { filterItems, isUnread, githubDiscussionUrl, recentRepositories, snapshotFreshness } from '../lib.mjs';
+import { filterItems, isUnread, githubDiscussionUrl, recentRepositories, snapshotFreshness, compareSnapshots } from '../lib.mjs';
 
 function node(id, options = {}) {
   return { id, number: 1, title: '<img src=x onerror=alert(1)>', url: 'https://github.com/milin-chang/private/discussions/1',
@@ -89,4 +89,20 @@ test('source snapshots show stale after ninety minutes regardless of discussion 
   assert.equal(snapshotFreshness('2026-11-17T02:29:59Z', now), 'stale');
   assert.equal(snapshotFreshness(null, now), 'missing');
   assert.equal(snapshotFreshness('invalid', now), 'missing');
+});
+test('checking the same published snapshot is distinct from a new sync without discussion changes', () => {
+  const previous = { generatedAt: '2026-11-17T01:00:00Z', items: [{ id: 'a', comments: 1 }] };
+  assert.deepEqual(compareSnapshots(previous, structuredClone(previous)), { kind: 'same', added: 0, updated: 0, removed: 0 });
+  assert.deepEqual(compareSnapshots(previous, { ...previous, generatedAt: '2026-11-17T02:00:00Z' }), { kind: 'synced', added: 0, updated: 0, removed: 0 });
+});
+test('refresh counts new discussions and metadata changes even if a discussion timestamp is unchanged', () => {
+  const previous = { generatedAt: '2026-11-17T01:00:00Z', items: [{ id: 'a', comments: 1, updatedAt: 'same' }, { id: 'b' }] };
+  const next = { generatedAt: '2026-11-17T02:00:00Z', items: [{ id: 'a', comments: 2, updatedAt: 'same' }, { id: 'c' }] };
+  assert.deepEqual(compareSnapshots(previous, next), { kind: 'changed', added: 1, updated: 1, removed: 1 });
+});
+test('an older or uninitialized published snapshot cannot replace newer data', () => {
+  const previous = { generatedAt: '2026-11-17T02:00:00Z', items: [{ id: 'new' }] };
+  for (const generatedAt of ['2026-11-17T01:00:00Z', null]) {
+    assert.deepEqual(compareSnapshots(previous, { generatedAt, items: [] }), { kind: 'older', added: 0, updated: 0, removed: 0 });
+  }
 });

@@ -31,7 +31,11 @@
 
 此 workflow 使用 `ubuntu-latest` 標準 runner，在**公開 repo** 執行時，標準 Actions 運算免費；它所讀取的來源 repo 可以是私人 repo。沒有使用大型 runner、cache 或另外上傳長期保存的資料 artifact。Pages artifact 保留 1 天。
 
-網站的「重新讀取」只讀取已部署的 JSON，不會啟動 workflow，也不是即時重新查詢 GitHub。開啟中的頁面每 5 分鐘重新讀取一次。資料超過 90 分鐘未同步時會顯示過期提醒，頁首會顯示實際同步時間與 GitHub Actions 連結。
+網站提供兩個不同操作：「檢查看板更新」讀取已部署的 JSON，明確告知沒有新版本、新同步但內容未變，或新增／更新了幾則討論。較舊的發布版本不會覆蓋目前的新資料；讀取超過 15 秒會結束等候並保留原資料。這個操作不會啟動 GitHub workflow。
+
+「同步 GitHub」開啟該 repository 的 Actions 頁面，仍需登入 GitHub 並按 **Run workflow** 才會真正重新抓取 Discussions。點擊後看板每 15 秒檢查新同步結果，取得較新的同步時間後會自動載入；最長等候 10 分鐘，也可以停止等候。頁面不會宣稱已啟動尚未確認的 workflow，也不會在前端儲存 Token。其餘時間每 5 分鐘重新讀取一次，回到頁面也會檢查。
+
+資料超過 90 分鐘未同步時會顯示過期提醒，頁首會顯示實際同步時間與 GitHub Actions 連結。
 
 ## 本機執行
 
